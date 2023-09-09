@@ -1,10 +1,9 @@
 <script lang="ts" setup>
   import { computed, onMounted, ref, useSlots } from 'vue'
-  import { hasSlotContent } from '../helpers/ui.helpers'
+  import { hasSlotContent } from '../tools/ui.helpers'
   import Ui3nIcon from './ui3n-icon.vue'
 
-  const slots = useSlots()
-  const props = defineProps<{
+  export interface Ui3nButtonProps {
     textColor?: string;
     color?: string;
     round?: boolean;
@@ -13,12 +12,17 @@
     iconSize?: string | number;
     iconColor?: string;
     disabled?: boolean;
-  }>()
-  const emit = defineEmits<{
+  }
+
+  export interface Ui3nButtonEmits {
     (ev: 'click', value: Event): void;
     (ev: 'focus', value: Event): void;
     (ev: 'blur', value: Event): void;
-  }>()
+  }
+
+  const slots = useSlots()
+  const props = defineProps<Ui3nButtonProps>()
+  const emit = defineEmits<Ui3nButtonEmits>()
 
   const buttonEl = ref<HTMLButtonElement | null>(null)
   const isSlotEmpty = computed(() => !hasSlotContent(slots['default']))
@@ -68,6 +72,8 @@
 </template>
 
 <style lang="scss" scoped>
+  @import "../assets/styles/mixins";
+
   .ui3n-button {
     --ui3n-button-text-size: 12px;
     --ui3n-button-text-height: 16px;
@@ -98,10 +104,7 @@
     }
 
     &--elevation {
-      box-shadow:
-        rgba(0, 0, 0, 0.2) 0px 3px 1px -2px
-        rgba(0, 0, 0, 0.14) 0px 2px 2px 0px
-        rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;
+      @include elevation();
     }
 
     &:not([disabled]) {
@@ -123,7 +126,7 @@
 
       &:active {
         opacity: 1;
-        background-color: var(--gray-90, #444);
+        background-color: var(--black-30, #b3b3b3);
         background-size: 100%;
         transition: background 0s;
       }
@@ -149,3 +152,4 @@
     }
   }
 </style>
+../tools/ui.helpers

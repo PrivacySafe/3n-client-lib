@@ -1,20 +1,19 @@
 import { createApp } from 'vue'
-import dayjs from 'dayjs'
-import relativeTime from 'dayjs/plugin/relativeTime'
-
-import { useIcons } from './plugins/icons'
-import { notifications } from './plugins/notifications'
-import Ui3nHtml from './directives/ui3n-html'
-
+import { createPinia } from 'pinia'
+import { dialogs, notifications, storeVueBus, vueBus, useIcons } from './plugins'
+import { Ui3nClickOutside } from './directives'
 import './assets/styles/style.css'
 
 import App from './App.vue'
 
-dayjs.extend(relativeTime)
+const store = createPinia()
+store.use(storeVueBus)
 
 createApp(App)
+  .use(store)
   .use(useIcons)
+  .use(dialogs)
   .use(notifications)
-  .provide('$dayjs', dayjs)
-  .directive('ui3n-html', Ui3nHtml)
+  .use(vueBus)
+  .directive('ui3n-click-outside', Ui3nClickOutside)
   .mount('#ui3nLib')

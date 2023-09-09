@@ -1,21 +1,41 @@
-export { default as Ui3nIcon } from './components/ui3n-icon.vue'
-export { default as Ui3nEmoji } from './components/ui3n-emoji.vue'
-export { default as Ui3nButton } from './components/ui3n-button.vue'
-export { default as Ui3nInput } from './components/ui3n-input.vue'
-export { default as Ui3nText } from './components/ui3n-text.vue'
-export { default as Ui3nDropFiles } from './components/ui3n-drop-files.vue'
-export { default as Ui3nNotification } from './components/ui3n-notification.vue'
-export { default as Ui3nTableSortIcon } from './components/ui3n-table-sort-icon.vue'
-export { default as Ui3nTable } from './components/ui3n-table.vue'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import 'pinia'
+import type { CbFunction, Ui3nNotificationProps, VueEventBus } from './constants'
+import type { Ui3nDialogComponentProps } from './components/ui3n-dialog.vue'
+import type { DialogInstance } from './plugins/dialogs'
 
-export { default as Ui3nHtml } from './directives/ui3n-html'
+export * from './constants'
+export * from './tools'
+export * from './plugins'
+export * from './directives'
+export * from './components'
 
-export { mailReg, colorsMap } from './constants/general'
-export { emoticons } from './constants/emoticons'
+declare module 'vue' {
+  interface ComponentCustomProperties {
+    $openDialog: (params: Ui3nDialogComponentProps) => DialogInstance | undefined;
+    $createNotice: (params: Ui3nNotificationProps) => void;
+    $locale: string;
+    $tr: (key: string, placeholders?: Record<string, string>) => string;
+    $changeLocale: (lang: string) => void;
+    $emitter: VueEventBus;
+  }
+}
 
-export { useIcons } from './plugins/icons'
-export { notifications } from './plugins/notifications'
-export { i18n } from './plugins/i18n'
-export { storeI18n } from './plugins/store-i18n'
-export { vueBus } from './plugins/vue-bus'
-export { storeVueBus } from './plugins/store-vue-bus'
+declare module 'pinia' {
+  export interface PiniaCustomProperties {
+    $openDialog: (params: Ui3nDialogComponentProps) => DialogInstance | undefined;
+    $createNotice: (params: Ui3nNotificationProps) => void;
+    $emitter: {
+      on: (type: string|symbol, handler: CbFunction) => void;
+      off: (type: string|symbol, handler?: CbFunction) => void;
+      emit:(type: string|symbol, arguments?: any) => void;
+      once: (type: string|symbol, handler: CbFunction) => void;
+      clear: () => void;
+    }
+    $i18n: {
+      locale: string;
+      changeLocale: (lang: string) => void;
+      tr: (key: string, placeholders?: Record<string, string>) => string;
+    }
+  }
+}
