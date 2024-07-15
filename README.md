@@ -1,10 +1,10 @@
 # Library (Vue3 + Typescript + Vite)
 
 Components, directives and plugins for Vue3 projects and some helpers methods (tools).  
-Storybook is used for documentation and demo.  
+Vitepress is used for documentation and demo.  
   
-For demo and development - `pnpm run storybook` or `npm run storybook`.  
-You can run the project as `pnpm dev` or `npm run dev` if you don't want to use Storybook.
+For demo and development - `pnpm run docs:dev` or `npm run docs:dev`.  
+You can run the project as `pnpm dev` or `npm run dev` if you don't want to use Vitepress.
 
 ## Components
   - Ui3nBadge,
@@ -23,7 +23,7 @@ You can run the project as `pnpm dev` or `npm run dev` if you don't want to use 
   - Ui3nVirtualScroll
   - Ui3nNotification
   - Ui3nDialog
-  - Ui3nTable
+  - Ui3nSwitch
   - Ui3nTabs
 
 ## Directives

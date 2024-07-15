@@ -1,0 +1,573 @@
+<script setup lang="ts">
+import { defineAsyncComponent, inject, ref, watch } from 'vue';
+import { DIALOGS_KEY, type DialogsPlugin } from '../plugins/dialogs';
+import Ui3nBadge from '../components/ui3n-badge.vue';
+import Ui3nButton from '../components/ui3n-button.vue';
+import Ui3nSwitch from '../components/ui3n-switch.vue';
+import Ui3nBreadcrumb from '../components/ui3n-breadcrumb.vue';
+import Ui3nIcon from '../components/ui3n-icon.vue';
+import Ui3nBreadcrumbs from '../components/ui3n-breadcrumbs.vue';
+import Ui3nCheckbox from '../components/ui3n-checkbox.vue';
+import Ui3nChip from '../components/ui3n-chip.vue';
+import Ui3nInput from '../components/ui3n-input.vue';
+import Ui3nList from '../components/ui3n-list.vue';
+import Ui3nMenu from '../components/ui3n-menu.vue';
+import Ui3nNotification from '../components/ui3n-notification.vue';
+import Ui3nTabs from '../components/ui3n-tabs.vue';
+import Ui3nText from '../components/ui3n-text.vue';
+import Ui3nVirtualScroll from '../components/ui3n-virtual-scroll.vue';
+// import Ui3nTable from '../components/ui3n-table.vue';
+// import type { ListingEntryTypeExtended } from '@/constants';
+
+const dialogs = inject<DialogsPlugin>(DIALOGS_KEY)!;
+const checkValue = ref([true, false, false]);
+const switchValue = ref([true, false]);
+const inputValue = ref('');
+const textValue = ref('');
+const list = ref<{
+  id: string;
+  title: string;
+  children: {
+    id: string;
+    title: string;
+  }[];
+}[]>(prepareList());
+const listV = ref<{
+  id: string;
+  title: string;
+}[]>(prepareVList());
+const tabsValue = ref(0);
+// const tableValue = ref<ListingEntryTypeExtended[]>([]);
+
+watch(
+  () => tabsValue.value,
+  (val, oldValue) => {
+    console.log(`CHANGE TAB FROM ${oldValue} TO ${val} INDEX`);
+  },
+  { immediate: true },
+);
+
+const notificationsExamples = {
+  warning: `Warning message with short Description for on or two lines and default view.`,
+  error: `Error message with short Description for on or two lines and default view.`,
+  success: `Successes message with short Description for on or two lines and default view.`,
+  info: `Info message with short Description for on or two lines and default view.`,
+};
+
+function prepareList() {
+  const res: any[] = [];
+  for (let i = 0; i < 26; i++) {
+    const char = String.fromCharCode(65 + i);
+    res.push({
+      id: char,
+      title: `${char}`,
+      children: [
+        { id: `${char}-01`, title: `01 ${char} item` },
+        { id: `${char}-02`, title: `02 ${char} item` },
+        { id: `${char}-03`, title: `03 ${char} item` },
+      ],
+    });
+  }
+
+  return res;
+}
+
+function prepareVList() {
+  return Array
+    .from({ length: 5000 }, (_, i) => ({
+      id: `${i}i`,
+      title: `Item ${i}`,
+    }));
+}
+
+function openDialog() {
+  const component = defineAsyncComponent(() => import('./test-dialog.vue'));
+  dialogs.$openDialog({
+    component,
+    componentProps: {
+      text: 'This is the place for any text!',
+    },
+    dialogProps: {
+      title: 'TEST DIALOG TITLE',
+      closeOnClickOverlay: false,
+    },
+  });
+}
+
+function onInputComponentEvent(eventName: string, value?: unknown) {
+  console.log('Ui3nInput component event: ', eventName, value);
+}
+</script>
+
+<template>
+  <section class="demo">
+    <h3>Components</h3>
+    <!-- BADGE -->
+    <div class="demo-row demo-row--with-title">
+      <div class="demo-row__title">--- BADGE ---</div>
+      <ui3n-badge value="5">
+        <div class="demo-info">SOME TEXT</div>
+      </ui3n-badge>
+    </div>
+    <!-- BREADCRUMBS -->
+    <div class="demo-row demo-row--with-title">
+      <div class="demo-row__title">--- BREADCRUMBS ---</div>
+      <ui3n-breadcrumbs>
+        <ui3n-breadcrumb
+          :is-active="true"
+          @click="() => console.log('HOME')"
+        >
+          Home
+        </ui3n-breadcrumb>
+        <ui3n-breadcrumb
+          :is-active="true"
+          @click="() => console.log('PROJECTS')"
+        >
+          Projects
+        </ui3n-breadcrumb>
+        <ui3n-breadcrumb>
+          Folder
+        </ui3n-breadcrumb>
+      </ui3n-breadcrumbs>
+    </div>
+    <!-- BUTTON -->
+    <div class="demo-row demo-row--with-title">
+      <div class="demo-row__title">--- BUTTON ---</div>
+      <ui3n-button>Primary</ui3n-button>
+      <ui3n-button disabled>Disabled</ui3n-button>
+      <ui3n-button size="small">Primary</ui3n-button>
+    </div>
+    <div class="demo-row">
+      <ui3n-button type="secondary">Secondary</ui3n-button>
+      <ui3n-button type="secondary" disabled>Secondary</ui3n-button>
+      <ui3n-button type="secondary" size="small">Secondary</ui3n-button>
+    </div>
+    <div class="demo-row">
+      <ui3n-button type="tertiary">Tertiary</ui3n-button>
+      <ui3n-button type="tertiary" disabled>Tertiary</ui3n-button>
+      <ui3n-button type="tertiary" size="small">Tertiary</ui3n-button>
+    </div>
+    <div class="demo-row">
+      <ui3n-button type="custom" color="#124037" text-color="#ffd0be">Custom</ui3n-button>
+      <ui3n-button type="custom" color="#124037" text-color="#ffd0be" disabled>Custom</ui3n-button>
+      <ui3n-button type="custom" color="#124037" text-color="#ffd0be" size="small">Custom</ui3n-button>
+    </div>
+    <div class="demo-row">
+      <ui3n-button icon="logout">Primary</ui3n-button>
+      <ui3n-button icon="logout" disabled>Primary</ui3n-button>
+      <ui3n-button icon="logout" size="small">Primary</ui3n-button>
+    </div>
+    <div class="demo-row">
+      <ui3n-button icon="home" icon-position="left">Primary</ui3n-button>
+      <ui3n-button icon="home" icon-position="left" disabled>Primary</ui3n-button>
+      <ui3n-button icon="home" icon-position="left" size="small">Primary</ui3n-button>
+    </div>
+    <div class="demo-row">
+      <ui3n-button type="icon" icon="check" />
+      <ui3n-button type="icon" icon="check" disabled />
+      <ui3n-button type="icon" icon="check" size="small" />
+    </div>
+    <!-- CHECKBOX -->
+    <div class="demo-row demo-row--with-title">
+      <div class="demo-row__title">--- CHECKBOX ---</div>
+      <ui3n-checkbox size="20" v-model="checkValue[0]">
+        Checked
+      </ui3n-checkbox>
+      <ui3n-checkbox size="20" disabled v-model="checkValue[0]">
+        Checked (disabled)
+      </ui3n-checkbox>
+      <ui3n-checkbox size="20" v-model="checkValue[1]">
+        Unchecked
+      </ui3n-checkbox>
+      <ui3n-checkbox size="20" v-model="checkValue[2]" indeterminate>
+        Indeterminate
+      </ui3n-checkbox>
+    </div>
+    <!-- SWITCH -->
+    <div class="demo-row demo-row--with-title">
+      <div class="demo-row__title">--- SWITCH ---</div>
+      <ui3n-switch size="24" v-model="switchValue[0]" />
+      <ui3n-switch size="24" disabled v-model="switchValue[0]" />
+      <ui3n-switch size="24" v-model="switchValue[1]" />
+      <ui3n-switch size="24" v-model="switchValue[1]">
+        With label
+      </ui3n-switch>
+    </div>
+    <!-- CHIP -->
+    <div class="demo-row demo-row--with-title">
+      <div class="demo-row__title">--- CHIP ---</div>
+      <ui3n-chip closeable max-width="150" color="var(--blue-10)">
+        simpleuser@test.com
+        <template #left="{ size, color }">
+          <ui3n-icon icon="person" :width="size" :height="size" :color="color" />
+        </template>
+      </ui3n-chip>
+      <ui3n-chip max-width="150" color="var(--blue-10)">
+        simpleuser@test.com
+        <template #left="{ size, color }">
+          <ui3n-icon icon="person" :width="size" :height="size" :color="color" />
+        </template>
+      </ui3n-chip>
+      <ui3n-chip
+        :round="false"
+        height="16"
+        max-width="150"
+        color="var(--color-icon-table-accent-default)"
+        text-color="var(--white-0)"
+        text-size="9"
+      >
+        DOCX
+      </ui3n-chip>
+    </div>
+    <!-- DIALOG -->
+    <div class="demo-row demo-row--with-title">
+      <div class="demo-row__title">--- DIALOG ---</div>
+      <ui3n-button @click="openDialog">OPEN DIALOG</ui3n-button>
+    </div>
+    <!-- INPUT FIELD -->
+    <div class="demo-row demo-row--with-title">
+      <div class="demo-row__title">--- INPUT FIELD---</div>
+      <div class="demo-row__cell">
+        <ui3n-input
+          placeholder="Enter any text"
+          v-model="inputValue"
+          @input="onInputComponentEvent('input', $event)"
+          @focus="onInputComponentEvent('focus', $event)"
+          @blur="onInputComponentEvent('blur', $event)"
+          @change="onInputComponentEvent('change', $event)"
+        />
+      </div>
+      <div class="demo-row__cell">
+        <ui3n-input placeholder="Enter any text" :disabled="true" v-model="inputValue" />
+      </div>
+      <div class="demo-row__cell">
+        text field value: {{ inputValue }}
+      </div>
+    </div>
+    <div class="demo-row">
+      <div class="demo-row__cell">
+        <ui3n-input
+          placeholder="Enter any text"
+          icon="search"
+          v-model="inputValue"
+          @input="onInputComponentEvent('input', $event)"
+          @focus="onInputComponentEvent('focus', $event)"
+          @blur="onInputComponentEvent('blur', $event)"
+          @change="onInputComponentEvent('change', $event)"
+        />
+      </div>
+      <div class="demo-row__cell">
+        <ui3n-input placeholder="Enter any text" icon="search" :disabled="true" v-model="inputValue" />
+      </div>
+    </div>
+    <div class="demo-row">
+      <div class="demo-row__cell">
+        <ui3n-input
+          placeholder="Enter any text"
+          clearable
+          icon="search"
+          v-model="inputValue"
+          @input="onInputComponentEvent('input', $event)"
+          @focus="onInputComponentEvent('focus', $event)"
+          @blur="onInputComponentEvent('blur', $event)"
+          @change="onInputComponentEvent('change', $event)"
+          @clear="onInputComponentEvent('clear')"
+        />
+      </div>
+    </div>
+    <div class="demo-row">
+      <div class="demo-row__cell">
+        <ui3n-input
+          placeholder="Enter any text less than 5 characters"
+          clearable
+          icon="search"
+          :rules="[
+            (v: string) => v.length <= 5 ? true : 'Not more than 5 characters',
+          ]"
+          v-model="inputValue"
+          @input="onInputComponentEvent('input', $event)"
+          @focus="onInputComponentEvent('focus', $event)"
+          @blur="onInputComponentEvent('blur', $event)"
+          @change="onInputComponentEvent('change', $event)"
+          @clear="onInputComponentEvent('clear')"
+        />
+      </div>
+    </div>
+    <div class="demo-row">
+      <div class="demo-row__cell">
+        <ui3n-input
+          label="Label"
+          placeholder="Enter any text"
+          clearable
+          icon="search"
+          v-model="inputValue"
+          @input="onInputComponentEvent('input', $event)"
+          @focus="onInputComponentEvent('focus', $event)"
+          @blur="onInputComponentEvent('blur', $event)"
+          @change="onInputComponentEvent('change', $event)"
+          @clear="onInputComponentEvent('clear')"
+        />
+      </div>
+    </div>
+    <!-- LIST -->
+    <div class="demo-row demo-row--with-title">
+      <div class="demo-row__title">--- LIST ---</div>
+      <div class="demo-row__list">
+        <ui3n-list :sticky="false" :items="list">
+          <template #item="{ item }">
+            <ui3n-list :items="item.children">
+              <template #title>
+                <div class="list-title">{{ item.title }}</div>
+              </template>
+
+              <template #item="{ item: children }">
+                <div class="list-item">{{ children.title }}</div>
+              </template>
+            </ui3n-list>
+          </template>
+        </ui3n-list>
+      </div>
+    </div>
+    <!-- VIRTUAL LIST -->
+    <div class="demo-row demo-row--with-title">
+      <div class="demo-row__title">--- VIRTUAL LIST ---</div>
+      <div class="demo-row__list">
+        <ui3n-virtual-scroll :items="listV" :min-child-height="32">
+          <template v-slot:item="{ value, index }">
+            <div class="demo-row__virtual-scroll-item">
+              {{ `(${index}) ${value.id}_${value.title}` }}
+            </div>
+          </template>
+        </ui3n-virtual-scroll>
+      </div>
+    </div>
+    <!-- MENU -->
+    <div class="demo-row demo-row--with-title">
+      <div class="demo-row__title">--- MENU ---</div>
+      <div class="demo-row__cell">
+        <ui3n-menu>
+          <ui3n-button>Menu</ui3n-button>
+          <template #menu>
+            <div
+              v-for="idx in [1, 2, 3]"
+              :key="idx"
+              class="demo-menu__item"
+              @click="() => console.log(`Click on the ${idx} menu item`)"
+            >
+              Menu option {{ idx }}
+            </div>
+          </template>
+        </ui3n-menu>
+      </div>
+      <div class="demo-row__cell">
+        <ui3n-menu :offset-x="16" :offset-y="8">
+          <ui3n-button>Menu (offset)</ui3n-button>
+          <template #menu>
+            <div
+              v-for="idx in [1, 2, 3]"
+              :key="idx"
+              class="demo-menu__item"
+              @click="() => console.log(`Click on the ${idx} menu item`)"
+            >
+              Menu option {{ idx }}
+            </div>
+          </template>
+        </ui3n-menu>
+      </div>
+    </div>
+    <!-- NOTIFICATION -->
+    <div class="demo-row demo-row--with-title">
+      <div class="demo-row__title">--- NOTIFICATION ---</div>
+      <div class="demo-row__cell-long">
+        <ui3n-notification type="info" :content="notificationsExamples.info" :duration="2000" :on-close="() => console.log('CLOSE NOTIFICATION!!!')" />
+      </div>
+      <div class="demo-row__cell-long">
+        <ui3n-notification type="info" :with-icon="false" :content="notificationsExamples.info" />
+      </div>
+    </div>
+    <div class="demo-row">
+      <div class="demo-row__cell-long">
+        <ui3n-notification type="success" :content="notificationsExamples.success" :duration="2000" />
+      </div>
+      <div class="demo-row__cell-long">
+        <ui3n-notification type="success" :with-icon="false" :content="notificationsExamples.success" />
+      </div>
+    </div>
+    <div class="demo-row">
+      <div class="demo-row__cell-long">
+        <ui3n-notification type="warning" :content="notificationsExamples.warning" :duration="2000" />
+      </div>
+      <div class="demo-row__cell-long">
+        <ui3n-notification type="warning" :with-icon="false" :content="notificationsExamples.warning" />
+      </div>
+    </div>
+    <div class="demo-row">
+      <div class="demo-row__cell-long">
+        <ui3n-notification type="error" :content="notificationsExamples.error" :duration="2000" />
+      </div>
+      <div class="demo-row__cell-long">
+        <ui3n-notification type="error" :with-icon="false" :content="notificationsExamples.error" />
+      </div>
+    </div>
+    <!-- TABS -->
+    <div class="demo-row demo-row--with-title">
+      <div class="demo-row__title">--- TABS ---</div>
+      <div class="demo-row__cell">
+        <ui3n-tabs item-direction="vertical" indicator-position="reverse" v-model="tabsValue">
+          <div class="tabs__item">Option 1</div>
+          <div class="tabs__item">Option 2</div>
+          <div class="tabs__item">Option 3</div>
+          <ui3n-button type="secondary" class="tabs__item">Option 4</ui3n-button>
+        </ui3n-tabs>
+      </div>
+      <div class="demo-row__cell-long">
+        <ui3n-tabs v-model="tabsValue">
+          <div class="tabs__item" disabled>Option 1</div>
+          <div class="tabs__item">Option 2</div>
+          <div class="tabs__item">Option 3</div>
+          <div class="tabs__item">Option 4</div>
+        </ui3n-tabs>
+      </div>
+    </div>
+    <!-- TEXT FIELD -->
+    <div class="demo-row demo-row--with-title">
+      <div class="demo-row__title">--- TEXT FIELD ---</div>
+      <div class="demo-row__cell">
+        <ui3n-text v-model:text="textValue" :rows="1" :max-rows="3" placeholder="Enter any text" />
+      </div>
+      <div class="demo-row__cell-text">
+        <span>text:</span>
+        <div style="white-space: pre-wrap">{{ textValue }}</div>
+      </div>
+    </div>
+    <div class="demo-row">
+      <div class="demo-row__cell">
+        <ui3n-text v-model:text="textValue" :rows="1" :max-rows="3" placeholder="Enter any text" :disabled="true" />
+      </div>
+    </div>
+    <div class="demo-row">
+      <div class="demo-row__cell">
+        <ui3n-text v-model:text="textValue" label="Some label" :rows="1" :max-rows="3" placeholder="Enter any text" />
+      </div>
+    </div>
+
+<!--    <div class="demo-row demo-row&#45;&#45;with-title">-->
+<!--      <div class="demo-row__title">-&#45;&#45; TABLE -&#45;&#45;</div>-->
+<!--      <div class="demo-row__table">-->
+<!--        <ui3n-table :items="[]" text-if-empty="No data" />-->
+<!--      </div>-->
+<!--    </div>-->
+  </section>
+</template>
+
+<style lang="scss">
+.demo {
+  position: relative;
+  width: 100%;
+  padding-bottom: 400px;
+
+  &-row {
+    position: relative;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+
+    &--with-title {
+      padding-top: 32px;
+    }
+  }
+
+  &-row__title {
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+  }
+
+  &-row__cell {
+    position: relative;
+    width: 300px;
+  }
+
+  &-row__cell-text {
+    display: flex;
+    width: 500px;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &-row__cell-long {
+    position: relative;
+    width: 500px;
+  }
+
+  &-row__list {
+    position: relative;
+    width: 300px;
+    height: 360px;
+    overflow-y: auto;
+    background-color: var(--grey-5);
+
+    .list {
+      &-title {
+        font-size: 14px;
+        font-weight: 600;
+        z-index: 10;
+        position: relative;
+        width: 24px;
+      }
+
+      &-item {
+        padding-left: 24px;
+        cursor: pointer;
+      }
+    }
+  }
+
+  &-row__virtual-scroll-item {
+    position: relative;
+    display: flex;
+    height: 32px;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  &-row__table {
+    position: relative;
+    width: 720px;
+    background-color: var(--white-0);
+  }
+
+  &-menu {
+    &__item {
+      position: relative;
+      height: 24px;
+      padding: 0 8px;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      font-size: 14px;
+
+      &:hover {
+        cursor: pointer;
+        opacity: 0.75;
+      }
+    }
+  }
+
+  .tabs {
+    &__item {
+      display: flex;
+      width: 100px;
+      justify-content: center;
+      align-items: center;
+      min-height: 32px;
+    }
+  }
+}
+</style>

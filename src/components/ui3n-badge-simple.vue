@@ -13,8 +13,8 @@
     {
       dot: false,
       value: '',
-      color: '#0090ec',
-      textColor: '#fff',
+      color: 'var(--color-bg-button-primary-default)',
+      textColor: 'var(--color-text-button-primary-default)',
     },
   )
 
@@ -45,53 +45,50 @@
 <template>
   <div
     ref="element"
-    :class="[
-      'ui3n-badge-simple',
-      { 'ui3n-badge-simple__dot': dot },
-    ]"
+    :class="[$style.badgeSimple, dot && $style.dot]"
   >
     <span
       v-if="!dot"
-      class="ui3n-badge-simple__text"
+      :class="$style.text"
     >
       {{ value }}
     </span>
   </div>
 </template>
 
-<style lang="scss" scoped>
-  .ui3n-badge-simple{
-    --ui3n-badge-size: 20px;
+<style lang="scss" module>
+.badgeSimple {
+  --ui3n-badge-size: 20px;
 
-    position: relative;
-    box-sizing: border-box;
-    background-color: v-bind(color);
-    outline: 1px var(--system-white, #fff) solid;
+  position: relative;
+  box-sizing: border-box;
+  background-color: v-bind(color);
+  outline: 1px var(--white-0) solid;
 
-    &__dot {
-      min-width: 8px;
-      width: 8px;
-      max-width: 8px;
-      min-height: 8px;
-      height: 8px;
-      max-height: 8px;
-      border-radius: 50%;
-    }
-
-    &__text {
-      display: block;
-      color: v-bind(textColor);
-      font-size: 12px;
-      line-height: var(--ui3n-badge-size);
-      text-align: center;
-    }
-
-    &:not(.ui3n-badge-simple__dot) {
-      min-height: var(--ui3n-badge-size);
-      height: var(--ui3n-badge-size);
-      width: max-content;
-      padding: 0 6px;
-      border-radius: 10px;
-    } 
+  &:not(.dot) {
+    min-height: var(--ui3n-badge-size);
+    height: var(--ui3n-badge-size);
+    width: max-content;
+    padding: 0 6px;
+    border-radius: 10px;
   }
+}
+
+.dot {
+  min-width: var(--spacing-s);
+  width: var(--spacing-s);
+  max-width: var(--spacing-s);
+  min-height: var(--spacing-s);
+  height: var(--spacing-s);
+  max-height: var(--spacing-s);
+  border-radius: 50%;
+}
+
+.text {
+  display: block;
+  color: v-bind(textColor);
+  font-size: var(--font-12);
+  line-height: var(--ui3n-badge-size);
+  text-align: center;
+}
 </style>

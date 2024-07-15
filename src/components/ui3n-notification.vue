@@ -1,133 +1,202 @@
-ui<script lang="ts" setup>
-  import { computed  } from 'vue'
-  import Ui3nIcon from './ui3n-icon.vue'
-  import Ui3nButton from './ui3n-button.vue'
-  import type { Ui3nNotificationProps } from '../constants'
+<script lang="ts" setup>
+import { onMounted } from 'vue';
+import Ui3nIcon from './ui3n-icon.vue';
+import Ui3nButton from './ui3n-button.vue';
+import type { Ui3nNotificationProps } from '../constants';
 
-  const props = defineProps<Ui3nNotificationProps>()
-  const params = computed(() => {
-    const {
-      id,
-      type = 'info',
-      content,
-      icon,
-      iconSize = '16',
-      iconColor = 'var(--black-30, #b3b3b3)',
-      position = 'center',
-      duration = 0,
-      onOpen = () => void(0),
-      onClose = () => void(0),
-    } = props
-    return { id, type, content, icon, iconSize, iconColor, position, duration, onOpen, onClose }
-  })
+const props = withDefaults(
+  defineProps<Ui3nNotificationProps>(),
+  {
+    type: 'info',
+    position: 'center',
+    duration: 0,
+    withIcon: true,
+    onOpen: () => void (0),
+    onClose: () => void (0),
+  },
+);
 
-  const closeNotification = () => {
-    params.value.onClose()
+const stylesByTypes = {
+  success: {
+    color: 'var(--success-content-default)',
+    icon: 'warning',
+    iconColor: 'var(--success-fill-default)',
+    iconRotate: 0,
+  },
+  warning: {
+    color: 'var(--warning-content-default)',
+    icon: 'warning',
+    iconColor: 'var(--warning-fill-default)',
+    iconRotate: 0,
+  },
+  info: {
+    color: 'var(--info-content-default)',
+    icon: 'info',
+    iconColor: 'var(--info-fill-default)',
+    iconRotate: 90,
+  },
+  error: {
+    color: 'var(--error-content-default)',
+    icon: 'info',
+    iconColor: 'var(--error-fill-default)',
+    iconRotate: 90,
+  },
+};
+
+onMounted(() => {
+  if (props.duration > 500) {
+    setTimeout(() => {
+      props.onClose();
+    }, props.duration);
   }
+});
+
+const closeNotification = () => {
+  props.onClose();
+};
 </script>
 
 <template>
   <div
-    :id="params.id"
-    :class="[
-      'ui3n-notification',
-      `ui3n-notification--${params.type}`,
-      `ui3n-notification--${params.position}`,
-      {
-        'ui3n-notification--with-icon': params.icon,
-      },
-    ]"
+    :id="id"
+    :class="[$style.notification, $style[`${type}Type`], $style[`${position}Position`], withIcon && $style.withIcon]"
   >
-    <ui3n-icon
-      v-if="params.icon"
-      :icon="params.icon"
-      :width="params.iconSize"
-      :height="params.iconSize"
-      :color="params.iconColor"
-    />
+    <div v-if="withIcon" :class="$style.icon">
+      <ui3n-icon
+        :icon="stylesByTypes[type].icon"
+        width="16"
+        height="16"
+        :rotate="stylesByTypes[type].iconRotate"
+        :color="stylesByTypes[type].iconColor"
+      />
+    </div>
 
-    <div class="ui3n-notification__content">
-      {{ params.content }}
+
+    <div :class="$style.content">
+      {{ content }}
     </div>
 
     <ui3n-button
       v-if="!props.duration"
-      round
+      type="icon"
+      size="small"
       color="transparent"
       icon="close"
-      icon-size="12"
-      icon-color="var(--system-white, #fff)"
-      class="ui3n-notification__close"
+      :icon-color="stylesByTypes[type].color"
+      :class="$style.closeBtn"
       @click="closeNotification"
     />
   </div>
 </template>
 
-<style lang="scss" scoped>
-  .ui3n-notification {
-    display: flex;
-    position: relative;
-    z-index: 5000;
-    border-radius: var(--half-size, 4px);
-    padding: var(--base-size, 8px);
-    max-width: 400px;
-    margin-bottom: var(--base-size);
+<style lang="scss" module>
+.notification {
+  --ui3n-notification-width: 380px;
 
-    &--with-icon {
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
+  display: flex;
+  position: relative;
+  z-index: 5000;
+  border-radius: var(--spacing-s);
+  outline: 1px solid var(--color-border-control-tritery-default);
+  padding: var(--spacing-m);
+  max-width: var(--ui3n-notification-width);
+  margin-bottom: var(--spacing-s);
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-s);
+}
 
-      .ui3n-notification__content {
-        padding-left: var(--base-size, 8px);
-      }
-    }
+.withIcon {
+  justify-content: flex-start;
+}
 
-    &__content {
-      position: relative;
-      flex-grow: 2;
-      font-size: var(--font-13, 13px);
-      font-weight: 400;
-      line-height: 1.5;
-      color: var(--system-white, #fff);
-    }
+.icon {
+  position: relative;
+  min-width: var(--spacing-l);
+  width: var(--spacing-l);
+  min-height: var(--spacing-l);
+  height: var(--spacing-l);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-    &__close {
-      position: absolute;
-      z-index: 1;
-      top: 0;
-      right: 0;
-    }
+.content {
+  position: relative;
+  flex-grow: 2;
+  font-size: var(--font-12);
+  font-weight: 500;
+  line-height: var(--font-16);
+}
 
-    &--success {
-      background-color: rgb(16, 196, 143);
-    }
+.closeBtn {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  right: 0;
+}
 
-    &--warning {
-      background-color: rgb(255, 136,0);
-    }
+.infoType {
+  background-color: var(--info-fill-default);
 
-    &--info {
-      background-color: rgb(16, 175, 239);
-    }
-
-    &--error {
-      background-color: rgb(239, 83, 80);
-    }
-
-    &--left {
-      margin-left: 0;
-      margin-right: auto;
-    }
-
-    &--center {
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    &--right {
-      margin-left: auto;
-      margin-right: 0;
-    }
+  .icon {
+    background-color: var(--info-content-default);
   }
+
+  .content {
+    color: var(--info-content-default);
+  }
+}
+
+.successType {
+  background-color: var(--success-fill-default);
+
+  .icon {
+    background-color: var(--success-content-default);
+  }
+
+  .content {
+    color: var(--success-content-default);
+  }
+}
+
+.warningType {
+  background-color: var(--warning-fill-default);
+
+  .icon {
+    background-color: var(--warning-content-default);
+  }
+
+  .content {
+    color: var(--warning-content-default);
+  }
+}
+
+.errorType {
+  background-color: var(--error-fill-default);
+
+  .icon {
+    background-color: var(--error-content-default);
+  }
+
+  .content {
+    color: var(--error-content-default);
+  }
+}
+
+.leftPosition {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.centerPosition {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.rightPosition {
+  margin-left: auto;
+  margin-right: 0;
+}
 </style>
