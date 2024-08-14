@@ -19,10 +19,11 @@ import Ui3nText from '../components/ui3n-text.vue';
 import Ui3nProgressLinear from '../components/ui3n-progress-linear.vue';
 import Ui3nVirtualScroll from '../components/ui3n-virtual-scroll.vue';
 import Ui3nProgressCircular from '../components/ui3n-progress-circular.vue';
-// import Ui3nTable from '../components/ui3n-table.vue';
-// import type { ListingEntryTypeExtended } from '@/constants';
+import Ui3nTable from '../components/ui3n-table/ui3n-table.vue';
+import type { Ui3nTableBodyBaseItem, Ui3nTableProps } from '../components/ui3n-table/types';
 
 const dialogs = inject<DialogsPlugin>(DIALOGS_KEY)!;
+const darkTheme = ref(false);
 const checkValue = ref([true, false, false]);
 const switchValue = ref([true, false]);
 const stepValue = ref(1);
@@ -45,7 +46,55 @@ const tabsValue = ref(0);
 const timerId = ref();
 const progressValue = ref(0);
 
-// const tableValue = ref<ListingEntryTypeExtended[]>([]);
+interface TableDemoItem extends Ui3nTableBodyBaseItem {
+  name: string;
+  type: string;
+  size?: string;
+  date: string;
+}
+
+const tableValue = ref<Ui3nTableProps<TableDemoItem>>({
+  config: {
+    tableName: 'test',
+    sortOrder: {
+      field: 'name',
+      direction: 'desc',
+    },
+    fieldAsRowKey: 'name',
+    selectable: 'multiple',
+    columnStyle: {
+      name: { width: '60%' },
+      type: { width: '10%' },
+      size: { width: '10%' },
+      date: { width: '20%' },
+    }
+  },
+  head: [
+    { key: 'name', text: 'Name', sortable: true },
+    { key: 'type', text: 'Type' },
+    { key: 'size', text: 'Size' },
+    { key: 'date', text: 'Date', sortable: true },
+  ],
+  body: {
+    content: [
+      { name: 'Documents', type: 'folder', date: '2024-07-20' },
+      { name: 'Downloads', type: 'folder', date: '2022-07-20' },
+      { name: 'Images', type: 'folder', date: '2022-07-20' },
+      { name: 'Video', type: 'folder', date: '2022-07-20' },
+      { name: 'Dump', type: 'folder', date: '2022-07-20' },
+      { name: 'calendar.docx', type: 'docx', size: '84 KB', date: '2022-07-22' },
+      { name: 'cars.xlsx', type: 'xlsx', size: '26 KB',date: '2022-07-22' },
+      { name: 'nature.jpg', type: 'jpg', size: '176 KB',date: '2022-07-22' },
+      { name: 'rocket.jpg', type: 'jpg', size: '14 KB',date: '2022-07-22' },
+      { name: 'стич.jpg', type: 'jpg', size: '76 KB',date: '2022-07-22' },
+      { name: 'favicon.png', type: 'png', size: '690 B',date: '2022-07-22' },
+      { name: 'asmail.d.ts', type: 'd.ts', size: '840 B',date: '2024-08-11'},
+      { name: 'common-caps.d.ts', type: 'd.ts', size: '2 KB',date: '2024-08-11'},
+      { name: 'files.d.ts', type: 'd.ts', size: '38 KB',date: '2024-08-11'},
+      { name: 'storage.d.ts', type: 'd.ts', size: '2 KB',date: '2024-08-11'},
+    ],
+  },
+});
 
 watch(
   () => tabsValue.value,
@@ -74,6 +123,14 @@ const notificationsExamples = {
   success: `Successes message with short Description for on or two lines and default view.`,
   info: `Info message with short Description for on or two lines and default view.`,
 };
+
+function changeColorTheme(val: boolean) {
+  const htmlEl = document.querySelector('html');
+  if (!htmlEl) return;
+
+  htmlEl.classList.remove(val ? 'default-theme' : 'dark-theme');
+  htmlEl.classList.add(val ? 'dark-theme' : 'default-theme');
+}
 
 function getRandomInt(max: number): number {
   return Math.floor(Math.random() * max);
@@ -135,7 +192,13 @@ changeProgressValue();
 
 <template>
   <section class="demo">
-    <h3>Components {{ progressValue }}</h3>
+    <h3>Components</h3>
+    <div class="theme">
+      <span>Default theme</span>
+      <ui3n-switch size="24" :model-value="darkTheme" @change="changeColorTheme" />
+      <span>Dark theme</span>
+    </div>
+
     <!-- BADGE -->
     <div class="demo-row demo-row--with-title">
       <div class="demo-row__title">--- BADGE ---</div>
@@ -570,12 +633,16 @@ changeProgressValue();
       </div>
     </div>
 
-<!--    <div class="demo-row demo-row&#45;&#45;with-title">-->
-<!--      <div class="demo-row__title">-&#45;&#45; TABLE -&#45;&#45;</div>-->
-<!--      <div class="demo-row__table">-->
-<!--        <ui3n-table :items="[]" text-if-empty="No data" />-->
-<!--      </div>-->
-<!--    </div>-->
+    <div class="demo-row demo-row--with-title">
+      <div class="demo-row__title">--- TABLE ---</div>
+      <div class="demo-row__table">
+        <ui3n-table
+          :config="tableValue.config"
+          :head="tableValue.head"
+          :body="tableValue.body"
+        />
+      </div>
+    </div>
   </section>
 </template>
 
@@ -584,6 +651,19 @@ changeProgressValue();
   position: relative;
   width: 100%;
   padding-bottom: 400px;
+
+  .theme {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    font-size: 14px;
+    font-weight: 500;
+  }
 
   &-row {
     position: relative;
@@ -659,7 +739,9 @@ changeProgressValue();
   &-row__table {
     position: relative;
     width: 720px;
+    height: 360px;
     background-color: var(--white-0);
+    overflow-y: hidden;
   }
 
   &-menu {
