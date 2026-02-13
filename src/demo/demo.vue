@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import { defineAsyncComponent, inject, ref, watch } from 'vue';
-  import { DIALOGS_KEY, type DialogsPlugin } from '@/plugins/dialogs/types';
+  import type { DialogsPlugin } from '@/plugins/dialogs/types';
+  import { DIALOGS_KEY } from '@/constants/plugins-keys';
   import Ui3nInputDemo from './ui3n-input-demo.vue';
   import Ui3nEditableDemo from './ui3n-editable-demo.vue';
   import Ui3nDropFilesDemo from './ui3n-drop-files-demo.vue';
@@ -219,6 +220,8 @@
       dialogProps: {
         title: 'THE TEST DIALOG-1 TITLE',
         icon: 'round-info',
+        confirmButton: false,
+        cancelButton: false,
         closeOnClickOverlay: false,
         closeOnEsc: true,
       },
