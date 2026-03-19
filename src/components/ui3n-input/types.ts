@@ -8,6 +8,7 @@ export interface Ui3nInputProps {
   icon?: string;
   iconColor?: string;
   rules?: Array<(v: unknown) => boolean | string>;
+  hideBottomSpace?: boolean;
   displayStateMode?: 'error' | 'success';
   displayStateWithIcon?: boolean;
   displayStateMessage?: string;

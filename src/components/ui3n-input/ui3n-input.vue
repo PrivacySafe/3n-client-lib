@@ -35,7 +35,7 @@
   const mainCssClasses = computed(() => {
     const val = [css.ui3nInput];
     props.label && val.push(css.withLabel);
-    isEmpty(props.rules) && val.push(css.withoutValidation);
+    props.hideBottomSpace && val.push(css.withoutBottomSpace);
     props.icon && val.push(css.withIcon);
     props.clearable && text.value && val.push(css.clearable);
     props.disabled && val.push(css.disabled);
@@ -243,7 +243,7 @@
     padding: 1px 1px 15px 1px;
     border-radius: var(--spacing-xs);
 
-    &.withoutValidation {
+    &.withoutBottomSpace {
       padding-bottom: 0;
     }
 
